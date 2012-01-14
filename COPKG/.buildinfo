@@ -1,0 +1,53 @@
+/* target information */
+
+#product-info  {
+	product-name: "lua";
+	version: "5.2.0";
+	original-source-location: "http://www.lua.org/ftp/lua-5.2.0.tar.gz";
+	original-source-website: "http://www.lua.org/";
+	license: "MIT";
+	packager: "Hamish C";
+}
+
+x86 {
+    compiler: vc10;
+    platform: x86;
+
+    targets: { 
+		"Release\Win32\liblua.lib",
+		"Release\Win32\liblua.dll",
+		"Release\Win32\lua.exe",
+		"Release\Win32\luac.exe",
+	};
+	
+    build-command:@"
+		msbuild /p:Platform=win32 /p:Configuration=Release lua.sln
+	";
+    
+    clean-command:@"
+       if exist Release rmdir /s /q Release > nul 2> nul
+       if exist src\Release rmdir /s /q src\Release > nul 2> nul
+       del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb  > nul 2>NUL
+    ";
+};
+
+x64 {
+    compiler: vc10;
+    platform: x64;
+
+    targets: { 
+		"Release\x64\liblua.lib",
+		"Release\x64\liblua.dll",
+		"Release\x64\lua.exe",
+		"Release\x64\luac.exe",
+	};
+	
+    build-command:@"
+        msbuild /p:Platform=x64 /p:Configuration=Release lua.sln
+    ";
+    clean-command:@"
+       if exist Release rmdir /s /q Release > nul 2> nul
+       if exist src\Release rmdir /s /q src\Release > nul 2> nul
+       del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb  > nul 2>NUL
+    ";
+};

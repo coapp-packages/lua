@@ -17,7 +17,7 @@ LUAI_FUNC Proto* luaU_undump (lua_State* L, ZIO* Z, Mbuffer* buff, const char* n
 LUAI_FUNC void luaU_header (lu_byte* h);
 
 /* dump one chunk; from ldump.c */
-LUAI_FUNC int luaU_dump (lua_State* L, const Proto* f, lua_Writer w, void* data, int strip);
+LUALIB_API int luaU_dump (lua_State* L, const Proto* f, lua_Writer w, void* data, int strip);
 
 /* data to catch conversion errors */
 #define LUAC_TAIL		"\x19\x93\r\n\x1a\n"
