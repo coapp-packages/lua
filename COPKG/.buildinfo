@@ -9,6 +9,29 @@
 	packager: "Hamish C";
 }
 
+test {
+    uses: release;
+    build-command: @"Release\Win32\lua -v
+        Release\x64\lua -v";
+};
+
+package {
+    uses: sign;
+    build-command: @"autopackage.exe COPKG\*.autopkg";
+};
+
+release {
+    set: BuildCfg="Release";
+    uses: x86;
+    uses: x64;
+};
+
+sign {
+    uses: release;
+    build-command: @"simplesigner.exe --nologo --sign Release\x64\**.dll Release\x64\**.exe Release\win32\**.dll Release\win32\**.exe";
+};
+
+
 x86 {
     compiler: vc10;
     platform: x86;
@@ -21,12 +44,13 @@ x86 {
 	};
 	
     build-command:@"
-		msbuild /p:Platform=win32 /p:Configuration=Release lua.sln
+		msbuild /p:Platform=win32 /p:Configuration=Release COPKG\lua\lua.sln
 	";
     
     clean-command:@"
        if exist Release rmdir /s /q Release > nul 2> nul
-       if exist src\Release rmdir /s /q src\Release > nul 2> nul
+       if exist COPKG\lua\Release rmdir /s /q COPKG\lua\Release > nul 2> nul
+       if exist COPKG\lua\ipch rmdir /s /q COPKG\lua\ipch > nul 2> nul
        del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb  > nul 2>NUL
     ";
 };
@@ -43,11 +67,12 @@ x64 {
 	};
 	
     build-command:@"
-        msbuild /p:Platform=x64 /p:Configuration=Release lua.sln
+        msbuild /p:Platform=x64 /p:Configuration=Release COPKG\lua\lua.sln
     ";
     clean-command:@"
        if exist Release rmdir /s /q Release > nul 2> nul
-       if exist src\Release rmdir /s /q src\Release > nul 2> nul
+       if exist COPKG\lua\Release rmdir /s /q COPKG\lua\Release > nul 2> nul
+       if exist COPKG\lua\ipch rmdir /s /q COPKG\lua\ipch > nul 2> nul
        del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb  > nul 2>NUL
     ";
 };
