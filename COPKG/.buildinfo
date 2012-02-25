@@ -11,13 +11,18 @@
 
 test {
     uses: release;
-    build-command: @"Release\Win32\lua -v
+    build-command: @"Release\x86\lua -v
         Release\x64\lua -v";
 };
 
 package {
     uses: sign;
-    build-command: @"autopackage.exe COPKG\*.autopkg";
+    build-command: @"autopackage.exe COPKG\lua[vc10]-x86.autopkg
+autopackage.exe COPKG\lua-dev-common.autopkg
+//autopackage.exe COPKG\lua-dev[vc10]-x86.autopkg
+";
+    clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
+
 };
 
 release {
@@ -28,7 +33,7 @@ release {
 
 sign {
     uses: release;
-    build-command: @"simplesigner.exe --nologo --sign Release\x64\**.dll Release\x64\**.exe Release\win32\**.dll Release\win32\**.exe";
+    build-command: @"simplesigner.exe --nologo --sign Release\x64\**.dll Release\x64\**.exe Release\x86\**.dll Release\x86\**.exe";
 };
 
 
@@ -37,10 +42,10 @@ x86 {
     platform: x86;
 
     targets: { 
-		"Release\Win32\liblua.lib",
-		"Release\Win32\liblua.dll",
-		"Release\Win32\lua.exe",
-		"Release\Win32\luac.exe",
+		"Release\x86\lua5.2.lib",
+		"Release\x86\lua5.2.dll",
+		"Release\x86\lua.exe",
+		"Release\x86\luac.exe",
 	};
 	
     build-command:@"
@@ -60,8 +65,8 @@ x64 {
     platform: x64;
 
     targets: { 
-		"Release\x64\liblua.lib",
-		"Release\x64\liblua.dll",
+		"Release\x64\lua5.2.lib",
+		"Release\x64\lua5.2.dll",
 		"Release\x64\lua.exe",
 		"Release\x64\luac.exe",
 	};
