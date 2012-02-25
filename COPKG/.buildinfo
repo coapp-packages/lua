@@ -1,4 +1,5 @@
 /* target information */
+@import "version.inc";
 
 #product-info  {
 	product-name: "lua";
@@ -10,20 +11,64 @@
 }
 
 test {
+    default : false;
     uses: release;
-    build-command: @"Release\x86\lua -v
-        Release\x64\lua -v";
+    build-command: @"
+	    rem this is the test recommended in the docs...
+		rem need to find something better though
+		Release\x86\lua -v
+	    Release\x64\lua -v";
 };
 
 package {
-    uses: sign;
-    build-command: @"autopackage.exe COPKG\lua[vc10]-x86.autopkg
-autopackage.exe COPKG\lua-dev-common.autopkg
-//autopackage.exe COPKG\lua-dev[vc10]-x86.autopkg
-";
-    clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
+    
+    default : false;
+    uses : sign;
+    
+    targets: { 
+        @"copkg\lua[vc10]-${package-version}-x86.msi",
+        @"copkg\lua-dev[vc10]-${package-version}-x86.msi",
+        @"copkg\lua-dev-common-${package-version}-any.msi",
+        @"copkg\lua[vc10]-${package-version}-x64.msi",
+        @"copkg\lua-dev[vc10]-${package-version}-x64.msi"
+    };
+    
+    build-command : @"
+        REM THERE IS SOME GOOFY STUFF IN HERE TO WORK AROUND A COUPLE BUGS IN AUTOPACKAGE.
+        REM FIXES COMING SOON...
+        cd COPKG
+        coapp add-feed %cd%\
+        coapp --force-scan list 
+        autopackage lua-dev-common.autopkg || goto failed
+        coapp --force-scan list 
+        autopackage lua[vc10]-x86.autopkg lua-dev[vc10]-x86.autopkg || goto failed
+        coapp --force-scan list 
+        autopackage lua[vc10]-x64.autopkg lua-dev[vc10]-x64.autopkg || goto failed
+        coapp --force-scan list 
+        coapp remove-feed %cd%\
+        ptk update-version
+    ";
 
+	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
+	
 };
+
+
+update-version {
+    default : false;
+    
+    build-command : @"
+        REM auto-increment version.inc file...
+        
+        cd COPKG
+        setlocal EnableDelayedExpansion
+        for /F ""tokens=4,5,6,7  delims=.; "" %%v in (version.inc) do (
+            set /a build=%%y + 1
+            set VERSTRING=#define { package-version: %%v.%%w.%%x.!build!; }
+        )
+        echo !VERSTRING! > version.inc
+    ";
+}
 
 release {
     set: BuildCfg="Release";
@@ -32,12 +77,14 @@ release {
 };
 
 sign {
+    default : false;
     uses: release;
     build-command: @"simplesigner.exe --nologo --sign Release\x64\**.dll Release\x64\**.exe Release\x86\**.dll Release\x86\**.exe";
 };
 
 
 x86 {
+    default : false;
     compiler: vc10;
     platform: x86;
 
@@ -61,6 +108,7 @@ x86 {
 };
 
 x64 {
+    default : false;
     compiler: vc10;
     platform: x64;
 
