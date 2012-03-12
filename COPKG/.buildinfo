@@ -37,7 +37,7 @@ package {
         REM THERE IS SOME GOOFY STUFF IN HERE TO WORK AROUND A COUPLE BUGS IN AUTOPACKAGE.
         REM FIXES COMING SOON...
         cd COPKG
-        coapp add-feed %cd%\
+        coapp add-feed "%cd%"
         coapp --force-scan list 
         autopackage lua-dev-common.autopkg || goto failed
         coapp --force-scan list 
