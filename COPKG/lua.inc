@@ -92,7 +92,7 @@ manifest[things-that-need-them] {
     };
 }
 
-assembly[lua] {
+assembly[lua[${flavor}]] {
     include : {
         dlls
     };

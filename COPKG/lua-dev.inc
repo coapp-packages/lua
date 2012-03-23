@@ -39,7 +39,7 @@ requires {
     package: "lua[${flavor}]-${package-version}-${Package.Architecture}-${Package.PublicKeyToken}";
 }
 
-developer-library[lua] {
+developer-library[lua[${flavor}]] {
     libraries : {
         libs
     };
