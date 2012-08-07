@@ -1,6 +1,10 @@
 /* target information */
 @import "version.inc";
 
+#define {
+    NewVersion : "${package-version++}";
+}
+
 #product-info  {
 	product-name: "lua";
 	version: "5.2.0";
@@ -11,41 +15,40 @@
 }
 
 test {
-    default : false;
+    set: {
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86, x64}",
+    };
     uses: release;
     build-command: @"
-	    rem this is the test recommended in the docs...
-		rem need to find something better though
-		Release\x86\lua -v
-	    Release\x64\lua -v";
+	    REM this is the test recommended in the docs...
+		REM need to find something better though
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                Release\%%A\%%B\lua -v
+            )
+        )
+    ";
 };
 
 package {
-    
-    default : false;
-    uses : sign;
+    uses: {
+        update-version,
+        sign,
+    };
     
     targets: { 
-        @"copkg\lua[vc10]-${package-version}-x86.msi",
-        @"copkg\lua-dev[vc10]-${package-version}-x86.msi",
-        @"copkg\lua-dev-common-${package-version}-any.msi",
-        @"copkg\lua[vc10]-${package-version}-x64.msi",
-        @"copkg\lua-dev[vc10]-${package-version}-x64.msi"
+        (COMP,PLAT) => @"copkg\lua-dev[${0}]-${NewVersion}-${1}.msi",
     };
     
     build-command : @"
-        REM THERE IS SOME GOOFY STUFF IN HERE TO WORK AROUND A COUPLE BUGS IN AUTOPACKAGE.
-        REM FIXES COMING SOON...
         cd COPKG
-        coapp add-feed ""%cd%""
-        coapp --force-scan list 
         autopackage lua-dev-common.autopkg || goto failed
-        coapp --force-scan list 
-        autopackage lua[vc10]-x86.autopkg lua-dev[vc10]-x86.autopkg || goto failed
-        coapp --force-scan list 
-        autopackage lua[vc10]-x64.autopkg lua-dev[vc10]-x64.autopkg || goto failed
-        coapp --force-scan list 
-        coapp remove-feed %cd%\
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                autopackage lua[%%A]-x86.autopkg lua-dev[vc10]-x86.autopkg || goto failed
+            )
+        )
         ptk update-version
     ";
 
@@ -55,34 +58,44 @@ package {
 
 
 update-version {
-    default : false;
-    
     build-command : @"
         REM auto-increment version.inc file...
-        
-        cd COPKG
+        if ""${noversion}"" == ""true"" goto :endver
+        pushd COPKG
         setlocal EnableDelayedExpansion
-        for /F ""tokens=4,5,6,7  delims=.; "" %%v in (version.inc) do (
-            set /a build=%%y + 1
-            set VERSTRING=#define { package-version: %%v.%%w.%%x.!build!; }
-        )
+        set VERSTRING=#define { package-version: ${NewVersion}; }
         echo !VERSTRING! > version.inc
+        popd
+        :endver
     ";
 }
 
 release {
-    set: BuildCfg="Release";
-    uses: x86;
-    uses: x64;
+    set: {
+        BuildCfg="Release",
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86, x64}",
+    };
+    build-command: @"
+        if ""${BUILT}"" equ ""true"" goto endrel
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                ptk --nologo base --COMP=%%A --PLAT=%%B || goto failed
+            )
+        )
+        :endrel
+    ";
+    clean-command:@"
+       if exist Release rmdir /s /q Release > nul 2> nul
+    ";
 };
 
 sign {
-    default : false;
     uses: release;
     build-command: @"simplesigner.exe --nologo --sign Release\x64\**.dll Release\x64\**.exe Release\x86\**.dll Release\x86\**.exe";
 };
 
-
+/*
 x86 {
     default : false;
     compiler: vc10;
@@ -125,6 +138,38 @@ x64 {
     clean-command:@"
        if exist Release rmdir /s /q Release > nul 2> nul
        if exist COPKG\lua\Release rmdir /s /q COPKG\lua\Release > nul 2> nul
+       if exist COPKG\lua\ipch rmdir /s /q COPKG\lua\ipch > nul 2> nul
+       del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb  > nul 2>NUL
+    ";
+};
+*/
+
+base {
+    set: {
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86}",
+        BuildCfg="${BuildCfg??Debug}",
+    };
+    compiler: "${COMP}";
+    platform: "${PLAT}";
+
+    targets: { 
+		"${BuildCfg}\${COMP}\${PLAT}\lua5.2.lib",
+		"${BuildCfg}\${COMP}\${PLAT}\lua5.2.dll",
+		"${BuildCfg}\${COMP}\${PLAT}\lua.exe",
+		"${BuildCfg}\${COMP}\${PLAT}\luac.exe",
+	};
+	
+    build-command:@"
+        if ""${PLAT}"" equ ""x86"" (
+            msbuild /p:Platform=win32 /p:Configuration=${BuildCfg} COPKG\lua\lua.sln
+        ) else (
+            msbuild /p:Platform=${PLAT} /p:Configuration=${BuildCfg} COPKG\lua\lua.sln
+        )
+    ";
+    clean-command:@"
+       if exist ${BuildCfg}\${COMP}\${PLAT} rmdir /s /q ${BuildCfg}\${COMP}\${PLAT} > nul 2> nul
+       if exist COPKG\lua\${BuildCfg} rmdir /s /q COPKG\lua\${BuildCfg} > nul 2> nul
        if exist COPKG\lua\ipch rmdir /s /q COPKG\lua\ipch > nul 2> nul
        del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb  > nul 2>NUL
     ";
