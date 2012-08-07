@@ -32,15 +32,17 @@ test {
 };
 
 package {
+    set: {
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86, x64}",
+    };
     uses: {
         update-version,
         sign,
     };
-    
     targets: { 
         (COMP,PLAT) => @"copkg\lua-dev[${0}]-${NewVersion}-${1}.msi",
     };
-    
     build-command : @"
         cd COPKG
         autopackage lua-dev-common.autopkg || goto failed
@@ -49,11 +51,8 @@ package {
                 autopackage lua[%%A]-x86.autopkg lua-dev[vc10]-x86.autopkg || goto failed
             )
         )
-        ptk update-version
     ";
-
 	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
-	
 };
 
 
