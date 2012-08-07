@@ -92,7 +92,13 @@ release {
 
 sign {
     uses: release;
-    build-command: @"simplesigner.exe --nologo --sign Release\x64\**.dll Release\x64\**.exe Release\x86\**.dll Release\x86\**.exe";
+    build-command: @"
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                simplesigner.exe --nologo --sign Release\%%A\%%B\**.dll Release\%%A\%%B\**.exe
+            )
+        )
+    ";
 };
 
 /*
