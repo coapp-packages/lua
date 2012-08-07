@@ -48,7 +48,7 @@ package {
         autopackage lua-dev-common.autopkg || goto failed
         for %%A in (${COMP}) do (
             for %%B in (${PLAT}) do (
-                autopackage lua[%%A]-x86.autopkg lua-dev[vc10]-x86.autopkg || goto failed
+                autopackage --COMP=%%A --PLAT=%%B lua.autopkg lua-dev.autopkg || goto failed
             )
         )
     ";
