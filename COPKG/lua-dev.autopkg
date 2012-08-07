@@ -5,7 +5,7 @@
 
 #define { 
     flavor: "${COMP??vc10}"; 
-    arch : "${PLATx86}";
+    arch : "${PLAT??x86}";
 }
 
 package {
