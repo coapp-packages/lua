@@ -1,0 +1,129 @@
+/* target information */
+@import "version.inc";
+
+#define {
+    NewVersion : "${package-version++}";
+}
+
+#product-info  {
+	product-name: "lua";
+	version: "5.1.5";
+	original-source-location: "http://www.lua.org/ftp/lua-5.1.5.tar.gz";
+	original-source-website: "http://www.lua.org/";
+	license: "MIT";
+	packager: "Tim Rogers";
+}
+
+test {
+    set: {
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86, x64}",
+    };
+    uses: release;
+    build-command: @"
+	    REM this is the test recommended in the docs...
+		REM need to find something better though
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                output\%%A\%%B\lua test\hello.lua
+            )
+        )
+    ";
+};
+
+package {
+    set: {
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86, x64}",
+    };
+    uses: {
+        update-version,
+        sign,
+    };
+    targets: { 
+        (COMP,PLAT) => @"copkg\lua-dev[${0}]-${NewVersion}-${1}.msi",
+    };
+    build-command : @"
+        cd COPKG
+        autopackage lua-dev-common.autopkg || goto failed
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                autopackage --COMP=%%A --PLAT=%%B lua.autopkg lua-dev.autopkg || goto failed
+            )
+        )
+    ";
+	clean-command: @"del COPKG\*.msi COPKG\*.wixpdb";
+};
+
+
+update-version {
+    build-command : @"
+        REM auto-increment version.inc file...
+        if ""${noversion}"" == ""true"" goto :endver
+        pushd COPKG
+        setlocal EnableDelayedExpansion
+        set VERSTRING=#define { package-version: ${NewVersion}; }
+        echo !VERSTRING! > version.inc
+        popd
+        :endver
+    ";
+}
+
+release {
+    set: {
+        BuildCfg="Release",
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86, x64}",
+    };
+    build-command: @"
+        if ""${BUILT}"" equ ""true"" goto endrel
+        for %%A in (${COMP}) do (
+            for %%B in (${PLAT}) do (
+                ptk --nologo base --COMP=%%A --PLAT=%%B || goto failed
+            )
+        )
+        :endrel
+    ";
+    clean-command:@"
+       if exist Release rmdir /s /q Release > nul 2> nul
+    ";
+};
+
+sign {
+    uses: release;
+    build-command: @"simplesigner.exe --nologo --sign Release\**.dll Release\**.exe || goto failed";
+};
+
+base {
+    set: {
+        COMP="${COMP??vc10}",
+        PLAT="${PLAT??x86}",
+        BuildCfg="${BuildCfg??Debug}",
+    };
+    compiler: "${COMP}";
+    platform: "${PLAT}";
+
+    targets: { 
+		"output\${COMP}\${PLAT}\lua51.lib",
+		"output\${COMP}\${PLAT}\lua51.dll",
+		"output\${COMP}\${PLAT}\lua.exe",
+		"output\${COMP}\${PLAT}\luac.exe",
+	};
+	
+    build-command:@"
+        REM this makes it so that DLLs can have their own SxS Activation Context in an embedded resource.
+		echo %CL% | findstr ISOLATION_AWARE || set CL=%CL% /D ISOLATION_AWARE_ENABLED /U NOUSER 
+
+		md output\${COMP}\${PLAT}
+		call etc\luavs.bat || goto failed
+		copy /y src\lua51.* output\${COMP}\${PLAT}\
+		copy /y src\*.exe output\${COMP}\${PLAT}\
+		del src\lua51.* src\*.exe
+	";
+    clean-command:@"
+       if exist ${BuildCfg}\${COMP}\${PLAT} rmdir /s /q ${BuildCfg}\${COMP}\${PLAT} > nul 2> nul
+       if exist COPKG\lua\${BuildCfg} rmdir /s /q COPKG\lua\${BuildCfg} > nul 2> nul
+       if exist COPKG\lua\ipch rmdir /s /q COPKG\lua\ipch > nul 2> nul
+       del /S /Q /A - *.sdf *.suo *.user *.exe *.pdb  > nul 2>NUL
+    ";
+};

@@ -1,0 +1,52 @@
+@import "version.inc" ;
+@import "compat.inc";
+@import "outercurve.inc" ;
+
+package {
+    name: "lua-dev-common";
+    version: "${package-version}";
+    arch: any;
+    display-name: "Lua Dev Library-common";
+}
+
+metadata {
+    summary: "The Lua developer library (common)";
+    description: @"Lua is a powerful, fast, lightweight, embeddable scripting language.
+Lua combines simple procedural syntax with powerful data description constructs based on associative arrays and extensible semantics. Lua is dynamically typed, runs by interpreting bytecode for a register-based virtual machine, and has automatic memory management with incremental garbage collection, making it ideal for configuration, scripting, and rapid prototyping."; 
+}
+
+files[headers] {
+    root: "..\\src\\";
+    include: {
+        "*.h"
+    };
+    
+    trim-path:all;
+    
+    // ensures that all the header files end up in a subfolder called 'include'
+    destination-path:"include";
+}
+
+files[docs] {
+    root: "..\\doc\\";
+    include: {
+        "*"
+    };
+    
+    trim-path:all;
+    
+    // ensures that all the documentation files end up in a subfolder called 'docs'
+    destination-path:"docs";
+
+}
+
+// the 'name' of the developer library isn't terribly important...
+developer-library[lua] {
+    headers: { 
+        headers
+    };
+    
+    docs: {
+        docs
+    };
+}
