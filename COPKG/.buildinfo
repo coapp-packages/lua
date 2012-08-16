@@ -91,7 +91,7 @@ release {
 
 sign {
     uses: release;
-    build-command: @"simplesigner.exe --nologo --sign Release\**.dll Release\**.exe || goto failed";
+    build-command: @"simplesigner.exe --nologo --sign output\**.dll output\**.exe || goto failed";
 };
 
 base {
