@@ -1,0 +1,6 @@
+Output
+Intermediate
+*.nupkg
+*.sdf
+*.opensdf
+*.suo
