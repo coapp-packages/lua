@@ -1,5 +1,5 @@
 /*
-** $Id: lundump.h,v 1.44 2011/05/06 13:35:17 lhf Exp $
+** $Id: lundump.h,v 1.39 2012/05/08 13:53:33 roberto Exp $
 ** load precompiled Lua chunks
 ** See Copyright Notice in lua.h
 */
@@ -11,13 +11,13 @@
 #include "lzio.h"
 
 /* load one chunk; from lundump.c */
-LUAI_FUNC Proto* luaU_undump (lua_State* L, ZIO* Z, Mbuffer* buff, const char* name);
+LUAI_FUNC Closure* luaU_undump (lua_State* L, ZIO* Z, Mbuffer* buff, const char* name);
 
 /* make header; from lundump.c */
 LUAI_FUNC void luaU_header (lu_byte* h);
 
 /* dump one chunk; from ldump.c */
-LUALIB_API int luaU_dump (lua_State* L, const Proto* f, lua_Writer w, void* data, int strip);
+LUAI_FUNC int luaU_dump (lua_State* L, const Proto* f, lua_Writer w, void* data, int strip);
 
 /* data to catch conversion errors */
 #define LUAC_TAIL		"\x19\x93\r\n\x1a\n"
