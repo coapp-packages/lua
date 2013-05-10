@@ -1,8 +1,0 @@
-// details for x64 version of lua package
-// build with: autopackage x64.autopkg lua.autopkg  
-@import "lua.inc";
-
-#define { 
-    flavor: "vc10"; 
-    arch : "x64";
-}
