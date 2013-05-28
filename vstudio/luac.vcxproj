@@ -64,17 +64,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
 	<LibName>luac</LibName>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='Cdecl|DynamicLibrary'"></OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='Cdecl|StaticLibrary'">-static</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='Cdecl|ltcg'">-static-ltcg</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='stdcall|DynamicLibrary'">-stdcall</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='stdcall|StaticLibrary'">-static-stdcall</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='stdcall|ltcg'">-static-stdcall-ltcg</OutNameSuffix>
+    <UsesConfigurationType>DynamicLibrary</UsesConfigurationType>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='Cdecl|DynamicLibrary'"></OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='Cdecl|StaticLibrary'">-static</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='Cdecl|ltcg'">-static-ltcg</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='stdcall|DynamicLibrary'">-stdcall</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='stdcall|StaticLibrary'">-static-stdcall</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='stdcall|ltcg'">-static-stdcall-ltcg</OutNameSuffix>
     <OutName>$(LibName)$(OutNameSuffix)</OutName>
     <ProjectRootDir Condition="'$(SolutionDir)' != ''">$(SolutionDir)</ProjectRootDir> 
     <ProjectRootDir Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)..\</ProjectRootDir> 
-    <OutDir>$(ProjectRootDir)Output\$(PlatformToolset)\$(Platform)\$(Configuration)\$(ConfigurationType)\$(CallingConvention)\</OutDir> 
-    <IntDir>$(ProjectRootDir)Intermediate\$(PlatformToolset)\$(Platform)\$(Configuration)\$(ConfigurationType)\$(CallingConvention)\</IntDir>
+    <OutDir>$(ProjectRootDir)Output\$(PlatformToolset)\$(Platform)\$(Configuration)\$(UsesConfigurationType)\$(CallingConvention)\</OutDir> 
+    <IntDir>$(ProjectRootDir)Intermediate\$(PlatformToolset)\$(Platform)\$(Configuration)\$(UsesConfigurationType)\$(CallingConvention)\</IntDir>
     <OutBinDir>$(OutDir)bin\</OutBinDir>
     <OutLibDir>$(OutDir)lib\</OutLibDir>
     <TargetName>lib\$(OutName)</TargetName>
@@ -86,7 +87,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-	  <AdditionalDependencies>liblua.lib;%(AdditionalDependencies)</AdditionalDependencies>
+	  <AdditionalDependencies>$(OutLibDir)liblua$(OutNameSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -96,7 +97,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-	  <AdditionalDependencies>liblua.lib;%(AdditionalDependencies)</AdditionalDependencies>
+	  <AdditionalDependencies>$(OutLibDir)liblua$(OutNameSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -110,7 +111,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-	  <AdditionalDependencies>liblua.lib;%(AdditionalDependencies)</AdditionalDependencies>
+	  <AdditionalDependencies>$(OutLibDir)liblua$(OutNameSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -124,7 +125,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-	  <AdditionalDependencies>liblua.lib;%(AdditionalDependencies)</AdditionalDependencies>
+	  <AdditionalDependencies>$(OutLibDir)liblua$(OutNameSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -64,17 +64,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
 	<LibName>lua</LibName>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='Cdecl|DynamicLibrary'"></OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='Cdecl|StaticLibrary'">-static</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='Cdecl|ltcg'">-static-ltcg</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='stdcall|DynamicLibrary'">-stdcall</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='stdcall|StaticLibrary'">-static-stdcall</OutNameSuffix>
-    <OutNameSuffix Condition="'$(CallingConvention)|$(ConfigurationType)'=='stdcall|ltcg'">-static-stdcall-ltcg</OutNameSuffix>
+    <UsesConfigurationType>DynamicLibrary</UsesConfigurationType>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='Cdecl|DynamicLibrary'"></OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='Cdecl|StaticLibrary'">-static</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='Cdecl|ltcg'">-static-ltcg</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='stdcall|DynamicLibrary'">-stdcall</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='stdcall|StaticLibrary'">-static-stdcall</OutNameSuffix>
+    <OutNameSuffix Condition="'$(CallingConvention)|$(UsesConfigurationType)'=='stdcall|ltcg'">-static-stdcall-ltcg</OutNameSuffix>
     <OutName>$(LibName)$(OutNameSuffix)</OutName>
     <ProjectRootDir Condition="'$(SolutionDir)' != ''">$(SolutionDir)</ProjectRootDir> 
     <ProjectRootDir Condition="'$(SolutionDir)' == ''">$(MSBuildThisFileDirectory)..\</ProjectRootDir> 
-    <OutDir>$(ProjectRootDir)Output\$(PlatformToolset)\$(Platform)\$(Configuration)\$(ConfigurationType)\$(CallingConvention)\</OutDir> 
-    <IntDir>$(ProjectRootDir)Intermediate\$(PlatformToolset)\$(Platform)\$(Configuration)\$(ConfigurationType)\$(CallingConvention)\</IntDir>
+    <OutDir>$(ProjectRootDir)Output\$(PlatformToolset)\$(Platform)\$(Configuration)\$(UsesConfigurationType)\$(CallingConvention)\</OutDir> 
+    <IntDir>$(ProjectRootDir)Intermediate\$(PlatformToolset)\$(Platform)\$(Configuration)\$(UsesConfigurationType)\$(CallingConvention)\</IntDir>
     <OutBinDir>$(OutDir)bin\</OutBinDir>
     <OutLibDir>$(OutDir)lib\</OutLibDir>
     <TargetName>lib\$(OutName)</TargetName>
