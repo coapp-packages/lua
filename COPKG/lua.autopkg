@@ -3,7 +3,7 @@
 nuget {
     nuspec {
         id: lua;
-        version: 5.2.2.0;
+        version: 5.2.2.11;
         title: lua;
         authors: {lua contributors, Benjamin Herila};
         owners: {Benjamin Herila, CoApp Project};
@@ -15,7 +15,7 @@ nuget {
         description: @"Lua is a powerful, fast, lightweight, embeddable scripting language. 
 
 Lua combines simple procedural syntax with powerful data description constructs based on associative arrays and extensible semantics. Lua is dynamically typed, runs by interpreting bytecode for a register-based virtual machine, and has automatic memory management with incremental garbage collection, making it ideal for configuration, scripting, and rapid prototyping. ";
-        releaseNotes: "";
+        releaseNotes: @"";
         copyright: Copyright 2013; 
         tags: { lua, native, CoApp };
     };
