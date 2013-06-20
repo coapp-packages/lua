@@ -3,7 +3,7 @@
 nuget {
     nuspec {
         id: lua;
-        version: 5.2.2.11;
+        version: 5.2.2.13;
         title: lua;
         authors: {lua contributors, Benjamin Herila};
         owners: {Benjamin Herila, CoApp Project};
